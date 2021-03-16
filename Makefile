@@ -3,6 +3,8 @@ GROUP_ID="org.springframework.boot"
 ARTIFACT_ID="spring-boot-cli"
 REPOS="libs-release-local"
 ARCHIVE_EXT=".tar.gz"
+SPRING_COMPLETION="_spring"
+COMPLETION_FUNCTIONS_DIR="/usr/share/zsh/site-functions"
 
 check-available-versions:
 	@curl --silent "$(JFROG_URL)/api/search/versions?g=$(GROUP_ID)&a=$(ARTIFACT_ID)&repos=$(REPOS)" \
@@ -16,6 +18,7 @@ install: clean
 uninstall:
 	@sudo rm /usr/local/bin/spring
 	@sudo rm -rf /opt/spring/
+	@sudo rm "$(COMPLETION_FUNCTIONS_DIR)/$(SPRING_COMPLETION)"
 
 clean: install-latest
 	@rm -rf "spring-$(LATEST_VERSION)"
@@ -27,6 +30,7 @@ install-latest: unpack-latest
 	@sudo chown root:root -R "/opt/spring/spring-$(LATEST_VERSION)"
 	@sudo ln -s "/opt/spring/spring-$(LATEST_VERSION)" /opt/spring/spring
 	@sudo ln -s /opt/spring/spring/bin/spring /usr/local/bin/spring
+	@sudo cp "/opt/spring/spring/shell-completion/zsh/$(SPRING_COMPLETION)" "$(COMPLETION_FUNCTIONS_DIR)/"
 
 unpack-latest: download-latest
 	@tar -xzvf "$(ARCHIVE_NAME)"
